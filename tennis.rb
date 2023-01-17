@@ -1,4 +1,3 @@
-
 class TennisGame1
 
   def initialize(player1Name, player2Name)
@@ -15,26 +14,31 @@ class TennisGame1
       @p2points += 1
     end
   end
+
+  def leadingPlayer
+    if @p1points > @p2points
+      return @player1Name
+    else 
+      return @player2Name
+  end
   
   def score
     result = ""
     tempScore=0
+    evenScore = {
+      0 => "Love-All",
+      1 => "Fifteen-All",
+      2 => "Thirty-All",
+  }
     if (@p1points==@p2points)
-      result = {
-          0 => "Love-All",
-          1 => "Fifteen-All",
-          2 => "Thirty-All",
-      }.fetch(@p1points, "Deuce")
-    elsif (@p1points>=4 or @p2points>=4)
-      minusResult = @p1points-@p2points
-      if (minusResult==1)
-        result ="Advantage player1"
-      elsif (minusResult ==-1)
-        result ="Advantage player2"
-      elsif (minusResult>=2)
-        result = "Win for player1"
-      else
-        result ="Win for player2"
+      result = evenScore.fetch(@p1points, "Deuce")
+    elsif ([@p1points, @p2points].max >= 4)
+      diffScore = (@p1points-@p2points).abs
+      if (diffScore==1)
+        return "Advantage #{leadingPlayer()}"
+      end
+      if (diffScore>=2)
+         return  "Win for #{leadingPlayer()}"
       end
     else
       (1...3).each do |i|
