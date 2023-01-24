@@ -1,4 +1,10 @@
 class TennisGame1
+  SCORE_HASH = {
+    0 => "Love",
+    1 => "Fifteen",
+    2 => "Thirty",
+    3 => "Forty",
+  }.freeze
 
   def initialize(player1Name, player2Name)
     @player1Name = player1Name
@@ -15,46 +21,42 @@ class TennisGame1
     end
   end
 
-  def leadingPlayer
+  def leading_player
     if @p1points > @p2points
       return @player1Name
     else 
       return @player2Name
+    end
+  end
+
+  def even_score_output(score)
+    if score <= 2
+      "#{SCORE_HASH[score]}-All"
+    else 
+      "Deuce"
+    end
+  end
+
+  def win_or_advantage_output(diff_score)
+    return "Advantage #{leading_player()}" if (diff_score==1)
+    "Win for #{leading_player()}" if (diff_score>=2)
+  end
+
+  def game_progress_output
+    "#{SCORE_HASH[@p1points]}-#{SCORE_HASH[@p2points]}"
   end
   
   def score
-    result = ""
+    result=""
     tempScore=0
-    evenScore = {
-      0 => "Love-All",
-      1 => "Fifteen-All",
-      2 => "Thirty-All",
-  }
+    
     if (@p1points==@p2points)
-      result = evenScore.fetch(@p1points, "Deuce")
+      result = even_score_output(@p1points)
     elsif ([@p1points, @p2points].max >= 4)
-      diffScore = (@p1points-@p2points).abs
-      if (diffScore==1)
-        return "Advantage #{leadingPlayer()}"
-      end
-      if (diffScore>=2)
-         return  "Win for #{leadingPlayer()}"
-      end
+      diff_score = (@p1points-@p2points).abs
+      result = win_or_advantage_output(diff_score)
     else
-      (1...3).each do |i|
-        if (i==1)
-          tempScore = @p1points
-        else
-          result+="-"
-          tempScore = @p2points
-        end
-        result += {
-            0 => "Love",
-            1 => "Fifteen",
-            2 => "Thirty",
-            3 => "Forty",
-        }[tempScore]
-      end
+      result = game_progress_output
     end
     result
   end
