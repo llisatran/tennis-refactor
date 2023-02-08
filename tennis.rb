@@ -1,58 +1,61 @@
+class Player
+  attr_reader :name
+  attr_accessor :points
+  def initialize(name)
+    @name = name
+    @points = 0
+  end
+end
 
 class TennisGame1
+  SCORE_HASH = {
+    0 => "Love",
+    1 => "Fifteen",
+    2 => "Thirty",
+    3 => "Forty",
+  }.freeze
 
   def initialize(player1Name, player2Name)
-    @player1Name = player1Name
-    @player2Name = player2Name
-    @p1points = 0
-    @p2points = 0
+   @p1 = Player.new(player1Name)
+   @p2 = Player.new(player2Name)
   end
         
   def won_point(playerName)
-    if playerName == "player1"
-      @p1points += 1
+    if playerName == @p1.name
+      @p1.points += 1
     else
-      @p2points += 1
+      @p2.points += 1
     end
+  end
+
+  def leading_player
+    return @p1.name if @p1.points > @p2.points
+    @p2.name
+  end
+
+  def even_score_output(score)
+    return "#{SCORE_HASH[score]}-All" if score <= 2
+    "Deuce"
+  end
+
+  def win_or_advantage_output(diff_score)
+    return "Advantage #{leading_player}" if (diff_score==1)
+    "Win for #{leading_player}" if (diff_score>=2)
+  end
+
+  def game_progress_output
+    "#{SCORE_HASH[@p1.points]}-#{SCORE_HASH[@p2.points]}"
   end
   
   def score
-    result = ""
-    tempScore=0
-    if (@p1points==@p2points)
-      result = {
-          0 => "Love-All",
-          1 => "Fifteen-All",
-          2 => "Thirty-All",
-      }.fetch(@p1points, "Deuce")
-    elsif (@p1points>=4 or @p2points>=4)
-      minusResult = @p1points-@p2points
-      if (minusResult==1)
-        result ="Advantage player1"
-      elsif (minusResult ==-1)
-        result ="Advantage player2"
-      elsif (minusResult>=2)
-        result = "Win for player1"
-      else
-        result ="Win for player2"
-      end
+    if (@p1.points==@p2.points)
+      even_score_output(@p1.points)
+    elsif (@p1.points >= 4 || @p2.points >= 4)
+      diff_score = (@p1.points-@p2.points).abs
+      win_or_advantage_output(diff_score)
     else
-      (1...3).each do |i|
-        if (i==1)
-          tempScore = @p1points
-        else
-          result+="-"
-          tempScore = @p2points
-        end
-        result += {
-            0 => "Love",
-            1 => "Fifteen",
-            2 => "Thirty",
-            3 => "Forty",
-        }[tempScore]
-      end
+      game_progress_output
     end
-    result
   end
 end
 
